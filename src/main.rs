@@ -9,7 +9,6 @@ use std::collections::HashMap;
 use rocket::config::{Config, Environment, Value};
 use rocket_contrib::json::{Json, JsonValue};
 
-mod db;
 mod schema;
 mod user;
 use user::{User};
@@ -33,11 +32,8 @@ fn create(user: Json<User>, conn: UsersDbConn ) -> Json<User> {
 
 // READ
 #[get("/")]
-fn read() -> Json<JsonValue> {
-    Json(json!([
-        "user1",
-        "user2"
-    ]))
+fn read(conn: UsersDbConn) -> Json<JsonValue> {
+    Json(json!(User::read(&conn)))
 }
 
 // UPDATE

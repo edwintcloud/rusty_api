@@ -47,9 +47,9 @@ fn update(_id: i32, user: Json<User>, conn: UsersDbConn) -> Json<JsonValue> {
 
 // DELETE
 #[delete("/<_id>")]
-fn delete(_id: i32) -> Json<JsonValue> {
+fn delete(_id: i32, conn: UsersDbConn) -> Json<JsonValue> {
     Json(json!({
-        "message": "User deleted successfully"
+        "success": User::delete(_id, &conn)
     }))
 }
 

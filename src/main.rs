@@ -38,8 +38,11 @@ fn read(conn: UsersDbConn) -> Json<JsonValue> {
 
 // UPDATE
 #[put("/<_id>", data = "<user>")]
-fn update(_id: i32, user: Json<User>) -> Json<User> {
-    user
+fn update(_id: i32, user: Json<User>, conn: UsersDbConn) -> Json<JsonValue> {
+    let update = User { id: Some(_id), ..user.into_inner() };
+    Json(json!({
+        "success": User::update(_id, update, &conn)
+    }))
 }
 
 // DELETE

@@ -18,7 +18,7 @@ impl User {
         diesel::insert_into(users::table)
             .values(&user)
             .execute(connection)
-            .expect("Error creating new hero");
+            .expect("Error creating new user");
 
         users::table.order(users::id.desc()).first(connection).unwrap()
     }

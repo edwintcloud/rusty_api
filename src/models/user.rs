@@ -1,7 +1,6 @@
 use diesel;
 use diesel::prelude::*;
 use diesel::mysql::MysqlConnection;
-
 use schema::users;
 
 #[table_name = "users"]

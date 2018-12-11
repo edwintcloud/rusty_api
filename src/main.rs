@@ -10,12 +10,12 @@ use rocket::config::{Config, Environment, Value};
 use rocket_contrib::json::{Json, JsonValue};
 
 mod schema;
-mod user;
-use user::{User};
+mod models;
+mod controllers;
 
-// Database
+// Global database struct
 #[database("users")]
-struct UsersDbConn(diesel::MysqlConnection);
+pub struct UsersDbConn(diesel::MysqlConnection);
 
 // Index route
 #[get("/")]
@@ -23,42 +23,16 @@ fn index() -> &'static str {
     "Hello rusty world 🎉"
 }
 
-// CREATE
-#[post("/", data = "<user>")]
-fn create(user: Json<User>, conn: UsersDbConn ) -> Json<User> {
-    let insert = User { id: None, ..user.into_inner() };
-    Json(User::create(insert, &conn))
-}
-
-// READ
-#[get("/")]
-fn read(conn: UsersDbConn) -> Json<JsonValue> {
-    Json(json!(User::read(&conn)))
-}
-
-// UPDATE
-#[put("/<_id>", data = "<user>")]
-fn update(_id: i32, user: Json<User>, conn: UsersDbConn) -> Json<JsonValue> {
-    let update = User { id: Some(_id), ..user.into_inner() };
-    Json(json!({
-        "success": User::update(_id, update, &conn)
-    }))
-}
-
-// DELETE
-#[delete("/<_id>")]
-fn delete(_id: i32, conn: UsersDbConn) -> Json<JsonValue> {
-    Json(json!({
-        "success": User::delete(_id, &conn)
-    }))
-}
-
 fn main() {
+
+    // bring users controller into scope from controllers module
+    use controllers::users;
+
     // startup rocket application with / root context
     // Ignite uses Rocket.toml for config
     rocket::ignite()
         .mount("/", routes![index])
-        .mount("/api/v1/users", routes![create, read, update, delete])
+        .mount("/api/v1/users", routes![users::create, users::read, users::update, users::delete])
         .attach(UsersDbConn::fairing())
         .launch();
 }

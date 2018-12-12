@@ -11,6 +11,8 @@ serde_json = "1.0.33"
 serde_derive = "1.0.81"
 diesel = { version = "1.0.0", features = ["mysql"] }
 diesel_codegen = { version = "0.16.0", features = ["mysql"] }
+bcrypt = "0.2.1"
+log = "0.4.6"
 
 [dependencies.rocket_contrib]
 version = "*"

@@ -2,6 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use diesel::mysql::MysqlConnection;
 use schema::users;
+extern crate bcrypt;
 
 #[table_name = "users"]
 #[derive(Serialize, Deserialize, Queryable, Insertable, AsChangeset)]
@@ -14,7 +15,13 @@ pub struct User {
 }
 
 impl User {
-    pub fn create(user: User, connection: &MysqlConnection) -> User {
+    pub fn create(mut user: User, connection: &MysqlConnection) -> User {
+        use self::bcrypt::{hash};
+        match hash(&user.password, 6) {
+            Ok(hashed) => user.password = hashed,
+            Err(_) => info!("unable to hash")
+        };
+
         diesel::insert_into(users::table)
             .values(&user)
             .execute(connection)
